@@ -1,0 +1,39 @@
+PerlMaple version 0.01
+======================
+
+This is a very simple interface to Waterloo's Maple software via the OpenMaple
+C interface.
+
+INSTALLATION
+
+Currently this software is only tested on Win32. To build this module
+properly, you must first have Maple installed on your system and append
+the paths of maplec.h and maplec.lib in your Maple installation to the
+enviroments LIB and INC respectively. Because this module use Maple's
+C interface via L<Inline::C>.
+
+A typical path of maplec.h is "C:\Program Files\Maple 9\extern\include",
+which should be appended to the INCLUDE environment. And a typical path
+of maplec.lib is "C:\Program Files\Maple 9\bin.win", which should be
+appended to the LIB environment. These paths may be different on your
+machine but do depend on your Maple's version and location.
+
+It may be similar on UNIX, but I haven't tried that.
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+  Test::More
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2005 Agent Zhang
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
