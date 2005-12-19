@@ -11,6 +11,7 @@ static int error = 0;
 
 /* callback used for directing result output */
 static void M_DECL textCallBack( void *data, int tag, char *output ) {
+    if (tag == MAPLE_TEXT_STATUS) return;
     strncpy(result, output, sizeof(result));
     result[sizeof(result)-1] = '\0';
 }
@@ -74,6 +75,7 @@ maple_eval (expr)
 	I32* temp;
 	PPCODE:
 	temp = PL_markstack_ptr++;
+	result[0] = '\0';
 	maple_eval(expr);
 	if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */

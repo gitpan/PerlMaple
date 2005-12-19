@@ -1,6 +1,40 @@
 Revision history for Perl extension PerlMaple.
 
-0.01  Tue Nov 15 22:26:13 2005
-	- original version; created by h2xs 1.23 with options
-		-A PerlMaple
+0.02 12/19/2005
+    * Added SVN link 'https://svn.berlios.de/svnroot/repos/win32maple'
+      to the POD doc.
+    * On the XS side, ignored MAPLE_TEXT_STATUS output so that
+      PerlMaple won't return silly things like
+      "bytes used=1963, alloc=719, time=0.44".
+    * Emphasized that Maple's maplec.h and maplec.lib 
+      must be in INC and LIB, repectively. Most of the test failure
+      reports are concerning this issue.
+    * Added AUTOLOAD mechanism so that any Maple functions or procedures
+	  all automagically become the methods of PerlMaple objects;
+    * Renamed ->eval method to ->eval_cmd so that ->eval is exactly the
+	  Maple's counterpart.
+	* ->eval is not backward-compatible.
+	* Added optional options PrintError and RaiseError to the constructor
+	* Added attribute methods PrintError and RaiseError
+	* Fixed a bug concerning multiple PerlMaple instances creation
+	* Added corresponding tests.
+	* Tweaked the POD doc accordingly
+	* Added the PerlMaple::Expression class to represents a Maple expression ASTs.
+	* PerlMaple::Expression can now build full-featured Perl AST from arbitrary 
+	  Maple expressions. So you can manipulate Maple expressions via data 
+	  structures directly, without the burden of parsing Maple code yourself!
+	* PerlMaple::Expression provides several useful mehods, such as type, expr,
+	  and ops.
+	* Added method to_ast to the PerlMaple class, which is construct a 
+	  PerlMaple::Expression object from the given Maple expression.
+	* Added ReturnAST attribute to the PerlMaple class (default off).
+	* PerlMaple's AUTOLOADed methods (shortcuts for Maple functions) and the 
+	  eval_cmd method will return a PerlMaple::Expression object automagically 
+	  if you turn on the ReturnAST attribute.
+	* Added many, many POD docs and many, many tests for the vast variety of 
+	  new features.
+	* Added code coverage testing results to POD docs. (Thanks to Devel::Cover.)
 
+0.01  Tue Nov 15 22:26:13 2005
+    * original version; created by h2xs 1.23 with options
+        -A PerlMaple

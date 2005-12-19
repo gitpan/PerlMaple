@@ -1,4 +1,4 @@
-PerlMaple version 0.01
+PerlMaple version 0.02
 ======================
 
 This is a very simple interface to Waterloo's Maple software via the OpenMaple
@@ -7,10 +7,10 @@ C interface.
 INSTALLATION
 
 Currently this software is only tested on Win32. To build this module
-properly, you must first have Maple installed on your system and append
-the paths of maplec.h and maplec.lib in your Maple installation to the
-enviroments LIB and INC respectively. Because this module use Maple's
-C interface via L<Inline::C>.
+properly, you must first have MapleSoft's Maple installed on your system
+and append the paths of *maplec.h* and *maplec.lib* in your Maple 
+installation to the enviroments LIB and INC respectively. Because this 
+module use Maple's C interface via Inline::C.
 
 A typical path of maplec.h is "C:\Program Files\Maple 9\extern\include",
 which should be appended to the INCLUDE environment. And a typical path
@@ -27,9 +27,15 @@ To install this module type the following:
    make test
    make install
 
+Prerequisites
+
+  Waterloo's Maple software (version 9 or higher)
+
 DEPENDENCIES
 
+  Carp
   Test::More
+  Test::Deep
 
 COPYRIGHT AND LICENCE
 
