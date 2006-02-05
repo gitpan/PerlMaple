@@ -3,9 +3,7 @@ use warnings;
 use inc::Module::Install;
 
 name            ('PerlMaple');
-version_from    ('lib/PerlMaple.pm');
-abstract_from   ('lib/PerlMaple.pm');
-author          ('Agent Zhang <agent2002@126.com>');
+all_from        ('lib/PerlMaple.pm');
 license         ('perl');
 
 requires        ('Carp');

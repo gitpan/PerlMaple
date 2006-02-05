@@ -1,15 +1,18 @@
-name: PerlMaple
-version: 0.02
+
 abstract: Perl binding for Waterloo's Maple software
-author: Agent Zhang <agent2002@126.com>
-license: perl
-distribution_type: module
-build_requires:
-  Test::More: 0
+author: Agent Zhang, <agentzh@gmail.com>
+build_requires: 
   Test::Deep: 0
-requires:
-  Carp: 0
-no_index:
-  directory:
+  Test::More: 0
+distribution_type: module
+generated_by: Module::Install version 0.55
+license: perl
+name: PerlMaple
+no_index: 
+  directory: 
     - inc
-generated_by: Module::Install version 0.45
+    - t
+requires: 
+  Carp: 0
+  perl: 5.6.0
+version: 0.03

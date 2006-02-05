@@ -1,6 +1,8 @@
 #line 1 "inc/Module/Install/Makefile.pm - E:/Perl/site/lib/Module/Install/Makefile.pm"
 package Module::Install::Makefile;
-use Module::Install::Base; @ISA = qw(Module::Install::Base);
+
+use Module::Install::Base;
+@ISA = qw(Module::Install::Base);
 
 $VERSION = '0.01';
 
@@ -62,20 +64,17 @@ sub write {
     $args->{VERSION} = $self->version || $self->determine_VERSION($args);
     $args->{NAME} =~ s/-/::/g;
 
-    # Only call $self->tests if we haven't been given explicit
-    # tests from makemaker_args.
-    $args->{test} ||= {TESTS => $self->tests};
-
+    $args->{test} = {TESTS => $self->tests} if $self->tests;
 
     if ($] >= 5.005) {
-	$args->{ABSTRACT} = $self->abstract;
-	$args->{AUTHOR} = $self->author;
+        $args->{ABSTRACT} = $self->abstract;
+        $args->{AUTHOR} = $self->author;
     }
     if ( eval($ExtUtils::MakeMaker::VERSION) >= 6.10 ) {
         $args->{NO_META} = 1;
     }
     if ( eval($ExtUtils::MakeMaker::VERSION) > 6.17 ) {
-	$args->{SIGN} = 1 if $self->sign;
+        $args->{SIGN} = 1 if $self->sign;
     }
     delete $args->{SIGN} unless $self->is_admin;
 
@@ -157,4 +156,4 @@ sub postamble {
 
 __END__
 
-#line 290
+#line 288

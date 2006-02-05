@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 45;
+use Test::More tests => 46;
 use Test::Deep;
 BEGIN { use_ok('PerlMaple') }
 
@@ -133,3 +133,7 @@ ok not $maple->ReturnAST;
 $maple->ReturnAST(1);
 $maple->ReturnAST(undef);
 ok not $maple->ReturnAST;
+
+$maple->ReturnAST(0);
+my $output = $maple->eval_cmd('with(plots):');
+unlike $output, qr/Warning/i, 'no warning message returned';

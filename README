@@ -1,4 +1,4 @@
-PerlMaple version 0.02
+PerlMaple version 0.03
 ======================
 
 This is a very simple interface to Waterloo's Maple software via the OpenMaple
@@ -7,18 +7,24 @@ C interface.
 INSTALLATION
 
 Currently this software is only tested on Win32. To build this module
-properly, you must first have MapleSoft's Maple installed on your system
-and append the paths of *maplec.h* and *maplec.lib* in your Maple 
-installation to the enviroments LIB and INC respectively. Because this 
-module use Maple's C interface via Inline::C.
+properly, you must first have Maple 9 or better installed on your 
+system and append
+the paths of B<maplec.h> and B<maplec.lib> in your Maple installation to the
+environments LIB and INC respectively. Because this module use Maple's
+C interface via L<Inline::C>.
 
-A typical path of maplec.h is "C:\Program Files\Maple 9\extern\include",
+Both F<maplec.h> and F<maplec.lib> (or maplec.a on *NIX systems?) are
+provided by your Maple installation itself. A typical path of maplec.h
+is "C:\Program Files\Maple 9\extern\include",
 which should be appended to the INCLUDE environment. And a typical path
 of maplec.lib is "C:\Program Files\Maple 9\bin.win", which should be
 appended to the LIB environment. These paths may be different on your
 machine but do depend on your Maple's version and location.
 
 It may be similar on UNIX, but I haven't tried that.
+
+It's known that this library's XS part won't work with Maple 7 on Win32.
+Sigh.
 
 To install this module type the following:
 
@@ -39,7 +45,7 @@ DEPENDENCIES
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2005 Agent Zhang
+Copyright (C) 2005-2006 Agent Zhang
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
