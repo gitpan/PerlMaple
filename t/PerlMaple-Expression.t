@@ -1,7 +1,10 @@
+#: PerlMaple-Expression.t
+#: 2005-12-19 2006-02-06
+
 use strict;
 use warnings;
 
-use Test::More tests => 84;
+use Test::More tests => 125;
 use Test::Deep;
 
 my $pack;
@@ -21,16 +24,12 @@ is $ast->expr, '3', 'method expr';
 ok $ast == 3, 'overloaded == operator';
 ok $ast != 5, 'overloaded != operator';
 
-cmp_deeply(
-    $ast,
-    bless({
-        nops => 1,
-        type => 'integer',
-        expr => '3',
-        ops => ['3'],
-    }, $pack),
-    'check the obj internals'
-);
+# check the ast internals
+is $ast->expr, 3;
+is $ast->type, 'integer';
+is $ast->nops, 1;
+is join(' ', $ast->ops), '3';
+
 is $ast->type, 'integer', 'method type';
 ok $ast->type('integer'), 'method type';
 ok $ast->type('type'), 'method type';
@@ -55,31 +54,26 @@ ok $ast <= 3.6;
 ok $ast > 2;
 ok 2 < $ast;
 
-my @ops = (
-    bless({
-        nops => 1,
-        type => 'integer',
-        expr => '35',
-        ops => ['35'],
-    }, $pack),
-    bless({
-        nops => 1,
-        type => 'integer',
-        expr => '-1',
-        ops => ['-1'],
-    }, $pack),
-);
+# level 1 test:
+is $ast->nops, 2;
+is $ast->type, 'float';
+is $ast->expr, '3.5';
+my @ops = $ast->ops;
 
-cmp_deeply(
-    $ast,
-    bless({
-        nops => 2,
-        type => 'float',
-        expr => '3.5',
-        ops => \@ops,
-    }, $pack),
-    'check the obj internals'
-);
+# level 2 test:
+is join(' ', @ops), '35 -1';
+
+# level 3 test:
+is $ops[0]->nops, 1;
+is $ops[0]->type, 'integer';
+is $ops[0]->expr, '35';
+is join(' ', $ops[0]->ops), 35;
+##
+is $ops[1]->nops, 1;
+is $ops[1]->type, 'integer';
+is $ops[1]->expr, '-1';
+is join(' ', $ops[1]->ops), -1;
+
 is $ast->type, 'float';
 ok $ast->type('float');
 ok $ast->type('type');
@@ -94,37 +88,33 @@ ok $ast, 'obj ok';
 isa_ok $ast, $pack;
 is $ast->expr, "[3, 42, a]", 'method expr';
 
-@ops = (
-    bless({
-        nops => 1,
-        type => 'integer',
-        expr => '3',
-        ops => ['3'],
-    }, $pack),
-    bless({
-        nops => 1,
-        type => 'integer',
-        expr => '42',
-        ops => ['42'],
-    }, $pack),
-    bless({
-        nops => 1,
-        type => 'symbol',
-        expr => 'a',
-        ops => ['a'],
-    }, $pack),
-);
+# level 1 test:
+is $ast->nops, 3;
+is $ast->type, 'list';
+is $ast->expr, '[3, 42, a]';
+@ops = $ast->ops;
+is join(' ', @ops), '3 42 a';
 
-cmp_deeply(
-    $ast,
-    bless({
-        nops => 3,
-        type => 'list',
-        expr => "[3, 42, a]",
-        ops => \@ops,
-    }, $pack),
-    'check the obj internals'
-);
+# level 2 test:
+my $op = $ops[0];
+is $op->nops, 1;
+is $op->type, 'integer';
+is $op->expr, '3';
+is join(' ', $op->ops), '3';
+
+$op = $ops[1];
+is $op->nops, 1;
+is $op->type, 'integer';
+is $op->expr, '42';
+is join(' ', $op->ops), '42';
+
+$op = $ops[2];
+is $op->nops, 1;
+is $op->type, 'symbol';
+is $op->expr, 'a';
+is join(' ', $op->ops), 'a';
+
+# other stuff:
 is $ast->type, 'list';
 ok not $ast->type('float');
 ok not $ast->type('numeric');
@@ -143,29 +133,30 @@ cmp_deeply \@elems, [qw(3 42 a)];
 $ast = $pack->new('2,      3');
 ok $ast;
 isa_ok $ast, $pack;
+
+# level 1:
+is $ast->nops, 2;
+is $ast->type, 'exprseq';
 is $ast->expr, '2, 3';
-cmp_deeply(
-    $ast,
-    bless({
-        nops => 2,
-        type => 'exprseq',
-        expr => '2, 3',
-        ops => [
-            bless({
-                nops => 1,
-                type => 'integer',
-                expr => '2',
-                ops => ['2'],
-            }, $pack),
-            bless({
-                nops => 1,
-                type => 'integer',
-                expr => '3',
-                ops => ['3'],
-            }, $pack),
-        ],
-    }, $pack),
-);
+@ops = $ast->ops;
+is join(' ', @ops), '2 3';
+
+# level 2:
+$op = $ops[0];
+isa_ok $op, $pack;
+is $op->nops, 1;
+is $op->type, 'integer';
+is $op->expr, '2';
+is join(' ', $op->ops), '2';
+  ##
+$op = $ops[1];
+isa_ok $op, $pack;
+is $op->nops, 1;
+is $op->type, 'integer';
+is $op->expr, '3';
+is join(' ', $op->ops), '3';
+
+# other stuff:
 is $ast->type, 'exprseq';
 ok $ast->type('exprseq');
 ok not $ast->type('type');

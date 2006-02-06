@@ -1,7 +1,27 @@
-Revision history for Perl extension PerlMaple.
+Changes for Perl extension PerlMaple.
 
-0.03 2006-2-5
-  --- Implementation
+=== 0.04  2006-2-6 (rev 43)
+  --- Core
+    * rewrote PerlMaple::Expression's constructor and made its instances 
+      rather "lazy". That is to say, PerlMaple::Expression now won't
+      construct a whole AST at startup time. It only evaluate a specific 
+      part of the AST on the user's *actual* demand. This is really a big
+      win on performance. Yay!
+    * added internal methods `init_type' and `init_ops' to PerlMaple::Expression.
+      They're only called on demand of the users.
+    * tweaked the tests a bit to remain to pass
+
+  --- Documents
+    * updated the POD to reflect recent changes in core
+    * added more words for the Maplesoft and its Maple product in the POD
+      (to help Google find this stuff)
+    * moved the VERSION section of the POD in PerlMaple.pm to the front of
+      the bloated SYNOPSIS section
+    * replaced the ugly `-E<gt>error' and things like that with more elegant
+      `C<error>' or so.
+
+=== 0.03  2006-2-5 (rev 38)
+  --- Core
     * changed the PerlMaple error message from "PerlMaple error: XXX" to
       "PerlMaple: XXX". Indeed "errors" always frighten poeple arway.
     * added undocumented and also preliminary support for the LogCmd attribute
@@ -22,7 +42,7 @@ Revision history for Perl extension PerlMaple.
       objects behave like simple Perl scalar variables. Yeah, simplicity is
       the key, no extra magic is really needed.
 
-  --- Documentation
+  --- Documents
     * updated my email address in POD to agentzh@gmail.com
     * added new TODO on facilities that imports complex perl data structure
       to Maple land
@@ -40,7 +60,7 @@ Revision history for Perl extension PerlMaple.
       POD.
     * Confirmed that this lib won't work with Maple 7. Sigh.
 
-0.02 2005-12-19
+=== 0.02  2005-12-19 (rev 11)
     * Added SVN link 'https://svn.berlios.de/svnroot/repos/win32maple'
       to the POD doc.
     * On the XS side, ignored MAPLE_TEXT_STATUS output so that
@@ -75,6 +95,6 @@ Revision history for Perl extension PerlMaple.
       new features.
     * Added code coverage testing results to POD docs. (Thanks to Devel::Cover.)
 
-0.01  Tue Nov 15 22:26:13 2005
+=== 0.01  2005-11-15 (rev 1)
     * original version; created by h2xs 1.23 with options
         -A PerlMaple

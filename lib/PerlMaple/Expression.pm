@@ -14,7 +14,7 @@ use vars qw( $AUTOLOAD );
 use PerlMaple;
 #use Smart::Comments;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our $maple;
 
 use overload
@@ -37,15 +37,23 @@ sub new {
     $maple->ReturnAST(0);
     $expr = $maple->eval_cmd("$expr;") if not $verified;
     $expr = $maple->eval_cmd("%;") if not $verified;
-    my $type = $maple->whattype($expr);
-    ### Type: $type => $expr
-    my @ops;
-    my $self = bless {
-        expr => $expr,
-        type => $type,
-        ops  => \@ops,
-    }, $class;
 
+    ### Type: $type => $expr
+    return bless {
+        expr => $expr,
+    }, $class;
+}
+
+sub expr {
+    return shift->{expr};
+}
+
+sub init_ops {
+    my $self = shift;
+    my $expr = $self->expr;
+    my $type = $self->type;
+    my @ops;
+    $self->{ops} = \@ops;
 
     my $tmp_expr = ($type eq 'exprseq') ? "[$expr]" : $expr;
     my $nops = $maple->nops($tmp_expr);
@@ -60,28 +68,36 @@ sub new {
         ### Got: $op => $expr
         warn "$op => $expr" if $self->{DEBUG};
         #die "\n\nHHHH $expr" if length($expr) < 20 and $expr =~ /operator, arrow/;
-        push @ops, $class->new($op);
+        push @ops, $self->new($op);
 
         for my $i (2..$nops) {
             my $op = $maple->op($i, $tmp_expr);
-            push @ops, $class->new($op, 1);
+            push @ops, $self->new($op, 1);
         }
     }
-    return $self;
-}
-
-sub expr {
-    return shift->{expr};
 }
 
 sub ops {
     my $self = shift;
+    $self->init_ops() if not $self->{ops};
     return wantarray ? @{$self->{ops}} : $self->{nops};
+}
+
+sub nops {
+    my $self = shift;
+    $self->init_ops() if not exists $self->{nops};
+    return $self->{nops};
+}
+
+sub init_type {
+    my $self = shift;
+    $self->{type} = $maple->whattype($self->expr);
 }
 
 sub type {
     my $self = shift;
     my $type = shift;
+    $self->init_type() if not $self->{type};
     if (not $type) {
         return $self->{type};
     }
@@ -122,7 +138,7 @@ PerlMaple::Expression - Perl AST for arbitrary Maple expressions
 
 =head1 VERSION
 
-This document describes PerlMaple::Expression 0.03 released on February 6, 2006.
+This document describes PerlMaple::Expression 0.04 released on February 6, 2006.
 
 =head1 SYNOPSIS
 
@@ -169,7 +185,7 @@ This class represents an Abstract Syntactic Tree (AST) for any Maple expressions
 It provides several very useful methods and attributes to manipulate Maple
 expressions effectively and cleanly.
 
-Hey, there's no parser written in Perl! I used Maple's functions to import the ASTs.
+Hey, there's no parser written in Perl! It uses Maple's functions to import the ASTs.
 For example, functions like C<whattype>, C<nops>, and C<op>. So, don't worry for
 the sanity of this library.
 
@@ -217,7 +233,9 @@ Furthermore, PerlMaple::Expression also exposes the following "inherent" methods
 
 =over
 
-=item -E<gt>new($expr, ?$verified)
+=item $obj->new($expr)
+
+=item $obj->new($expr, $verified)
 
 This is the constructor of the PerlMaple::Expression class. The first argument
 C<$expr> is any Maple expression (not Maple statements though) from which the
@@ -227,7 +245,53 @@ argument will be evaluated by Maple to verify its sanity. If the second argument
 is absent, it is implied to be false. That's to say, verification will be
 performed by default.
 
-=item -E<gt>ops
+Note that since version 0.04, this constructor has become quite "lazy". It only 
+(partially) build the root of the AST during initialization. The construction of 
+the child objects and also other pieces for the root will be delayed until the user actually 
+asks for them (e.g. when user calls the C<ops> method). This approach significantly
+improves performance since most users seldom require a whole AST for their Maple
+expression in practice. That is to say, constructing a PerlMaple::Expression object
+is not *that* expensive comparing to earlier versions of this module.
+
+=item $obj->expr()
+
+Returns the expression corresponding to the current PerlMaple::Expression object.
+Note that the string returned may be different from the one passed to the 
+constructor. Because it will be evaluated in Maple to check the validity.
+Hence, the following tests will pass:
+
+    $ast = PerlMaple::Expression->new('2,        3,4');
+    is $ast->expr, '2, 3, 4';
+
+However, when you pass a true value as the second argument to the constructor,
+the validity check will be skipped:
+
+    $ast = PerlMaple::Expression->new('2,        3,4', 1);
+    is $ast->expr, '2,        3,4';
+
+=item $obj->type()
+
+Get the type of the current Maple expression via Maple's C<whattype> function.
+It is worth mentioning that the type of the expression is evaluated when
+the object is constructing, so there's no extra cost to invoke this method
+repeatedly.
+
+=item $obj->type($new_value)
+
+Test whether the current Maple expression is of the specified type. Note
+that this method calls Maple's C<type> function to test the type equality.
+So the following tests will happily pass:
+
+    $ast = PerlMaple::Expression->new('3.5');
+    ok $ast->type($ast, 'numeric');
+    ok $ast->type($ast, 'type');
+
+When the expression is of type 'exprseq', this method won't use Maple's
+C<type> function since it will croak on expression sequences. Instead,
+the -E<gt>type method will return true if and only if the given type
+is exactly the same as 'exprseq'.
+
+=item $obj->ops()
 
 In list context, the C<ops> method returns the list of operands of the current
 Maple expression. Every element of the resulting list is still a PerlMaple::Expression
@@ -249,50 +313,46 @@ tests will pass:
     is $ops[1]->type, 'integer';
     is $ops[2]->type, 'integer';
 
-Internally, -E<gt>ops method calls Maple's C<op> function to get the operands.
-For atomic expressions, such as integers and symbols, -E<gt>C<ops> will simply
+Internally, C<ops> method calls Maple's C<op> function to get the operands.
+For atomic expressions, such as integers and symbols, C<ops> will simply
 return the expr itself.
 
 When used in scalar context, this method will simply return the number of operands,
 calculated by Maple's C<nops> function internally.
 
-=item -E<gt>expr
+=item $obj->nops()
 
-Returns the expression corresponding to the current PerlMaple::Expression object.
-Note that the string returned may be different from the one passed to the 
-constructor. Because it will be evaluated in Maple to check the validity.
-Hence, the following tests will pass:
+Returns the number of elements which C<ops> method may return. Note that this
+method calculates the result by calling Maple's `nops' function, without actually
+counting the elements itself. Therefore, it's very efficient.
 
-    $ast = PerlMaple::Expression->new('2,        3,4');
-    is $ast->expr, '2, 3, 4';
+This method also overrides Maple's C<nops> function's odd behavior by allowing
+'exprseq' typed objects to return meaningful results.
 
-However, when you pass a true value as the second argument to the constructor,
-the validity check will be skipped:
+=back
 
-    $ast = PerlMaple::Expression->new('2,        3,4', 1);
-    is $ast->expr, '2,        3,4';
+=head1 INTERNAL METHODS
 
-=item -E<gt>type
+B<Stop!>
 
-Get the type of the current Maple expression via Maple's C<whattype> function.
-It is worth mentioning that the type of the expression is evaluated when
-the object is constructing, so there's no extra cost to invoke this method
-repeatedly.
+The following methods are supposed to be used internally only and are very
+likely to change in the future. You should skip this section completely unless
+you're interested in this module's implementation.
 
-=item -E<gt>type($new_value)
+=over
 
-Test whether the current Maple expression is of the specified type. Note
-that this method calls Maple's C<type> function to test the type equality.
-So the following tests will happily pass:
+=item init_type
 
-    $ast = PerlMaple::Expression->new('3.5');
-    ok $ast->type($ast, 'numeric');
-    ok $ast->type($ast, 'type');
+If and only if the user asks for C<type> and the `type' field has not yet initialized,
+this method will be invoked automatically by the C<type> method to evaluate the
+expression object's `type', and the result will be saved into the `type' field for
+future uses.
 
-When the expression is of type 'exprseq', this method won't use Maple's
-C<type> function since it will croak on expression sequences. Instead,
-the -E<gt>type method will return true if and only if the given type
-is exactly the same as 'exprseq'.
+=item init_ops
+
+If and only if the user asks for C<ops> and the `ops' field hasn't initialized, this
+method will be invoked automaticaly by the C<ops> method to evaluate the expression
+object's `ops', and the result will be saved into the `ops' field for future fetches.
 
 =back
 
@@ -313,14 +373,6 @@ Maple commands.
 =head1 TODO
 
 =over
-
-=item *
-
-Make the PerlMaple Expression objects a bit "lazy" by only partially build
-up the internal AST during initialization. The construction of the child
-objects will be delayed until the user actually asks for them (e.g. calling
-the ->ops method). This approach will significantly improve performance since
-users seldom want a whole AST for their Maple expression.
 
 =item *
 

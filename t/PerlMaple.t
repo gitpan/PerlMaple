@@ -1,10 +1,10 @@
 #: PerlMaple.t
-#: 2005-11-14 2005-12-17
+#: 2005-11-14 2006-02-06
 
 use strict;
 use warnings;
 
-use Test::More tests => 46;
+use Test::More tests => 48;
 use Test::Deep;
 BEGIN { use_ok('PerlMaple') }
 
@@ -90,16 +90,10 @@ is $maple->eval_cmd('3+1:'), '';
     isa_ok $ast, $pack;
     is $ast->expr, '3', 'method expr';
 
-    cmp_deeply(
-        $ast,
-        bless({
-            nops => 1,
-            type => 'integer',
-            expr => '3',
-            ops => ['3'],
-        }, $pack),
-        'check the obj internals'
-    );
+    # check the ast internals
+    is $ast->type, 'integer';
+    is $ast->nops, 1;
+    is join(' ', $ast->ops), '3';
 
     $ast = $maple->to_ast('2,        3,4', 1);
     is $ast->expr, '2,        3,4';
