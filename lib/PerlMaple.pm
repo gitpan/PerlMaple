@@ -1,7 +1,7 @@
 #: PerlMaple.pm
 #: implementation for the PerlMaple class
 #: Copyright (c) 2005-2006 Agent Zhang
-#: 2005-11-14 2006-02-06
+#: 2005-11-14 2006-02-18
 
 package PerlMaple;
 
@@ -13,7 +13,7 @@ use PerlMaple::Expression;
 use Carp qw(carp croak);
 use vars qw( $AUTOLOAD );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 my $Started = 0;
 
 require XSLoader;
@@ -120,7 +120,7 @@ PerlMaple - Perl binding for Maplesoft's Maple mathematical package
 
 =head1 VERSION
 
-This document describes PerlMaple 0.04 released on February 6, 2006.
+This document describes PerlMaple 0.05 released on February 18, 2006.
 
 =head1 SYNOPSIS
 
@@ -194,7 +194,10 @@ The Maple software is *not* free, sigh, unlike this CPAN distribution.
 
 =head1 INSTALLATION
 
-Currently this software is only tested on Win32 against Maple 9.
+Currently this software is only tested on Win32 against Maple 9.01 and
+Maple 10.00, but it's believed to work with other versions higher than
+9. If you get it work with a specific version of Maple, please send me
+a mail and let me know. :=)
 
 To build this module properly, you must first have Maple 9 or better 
 installed on your system and append
@@ -382,7 +385,7 @@ Indicates whether the last Maple evaluation is successful.
 =head1 CODE COVERAGE
 
 I use L<Devel::Cover> to test the code coverage of my tests, below is the
-L<Devel::Cover> report on this module's test suite (version 0.04):
+L<Devel::Cover> report on this module's test suite (version 0.05):
 
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
     File                           stmt   bran   cond    sub    pod   time  total
@@ -415,6 +418,10 @@ PerlMaple::Expression instances, in the duration.
 
 Add facilities to ease importing of Perl complex data structures to Maple
 environment, i.e. a list of lists of numbers.
+
+=item *
+
+Port this binding to Linux Maple users and (hopefully) to MATLAB users as well.
 
 =item *
 

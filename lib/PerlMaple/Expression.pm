@@ -1,7 +1,7 @@
 #: PerlMaple/Expression.pm
 #: Implementation for the PerlMaple::Expression class
 #: Copyright (c) 2005-2006 Agent Zhang
-#: 2005-12-19 2006-02-06
+#: 2005-12-19 2006-02-18
 
 package PerlMaple::Expression;
 
@@ -14,7 +14,7 @@ use vars qw( $AUTOLOAD );
 use PerlMaple;
 #use Smart::Comments;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 our $maple;
 
 use overload
@@ -138,7 +138,7 @@ PerlMaple::Expression - Perl AST for arbitrary Maple expressions
 
 =head1 VERSION
 
-This document describes PerlMaple::Expression 0.04 released on February 6, 2006.
+This document describes PerlMaple::Expression 0.05 released on February 18, 2006.
 
 =head1 SYNOPSIS
 
@@ -355,6 +355,10 @@ method will be invoked automaticaly by the C<ops> method to evaluate the express
 object's `ops', and the result will be saved into the `ops' field for future fetches.
 
 =back
+
+=head1 CODE COVERAGE
+
+See L<PerlMaple> for details.
 
 =head1 BUGS
 

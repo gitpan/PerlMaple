@@ -1,19 +1,34 @@
-PerlMaple version 0.04
+PerlMaple version 0.05
 ======================
 
-This is a very simple interface to Waterloo's Maple software via the OpenMaple
-C interface.
+DESCRIPTION
+
+Maple is a great tool for solving mathematical problems and creating
+interactive technical applications provided by Maplesoft. Its power of 
+symbolic calculation is extremely impressive.
+
+This is a simple (but already powerful) Perl binding for Maple's
+OpenMaple C interface. To try out this binding, you have to 
+purchase and install the Maple software first:
+
+	http://www.maplesoft.com.
+
+The Maple software is *not* free, sigh, unlike this CPAN distribution.
 
 INSTALLATION
 
-Currently this software is only tested on Win32. To build this module
-properly, you must first have Maple 9 or better installed on your 
-system and append
-the paths of B<maplec.h> and B<maplec.lib> in your Maple installation to the
-environments LIB and INC respectively. Because this module use Maple's
-C interface via L<Inline::C>.
+Currently this software is only tested on Win32 against Maple 9.01 and
+Maple 10.00, but it's believed to work with other versions higher than
+9. If you get it work with a specific version of Maple, please send me
+a mail and let me know. :=)
 
-Both F<maplec.h> and F<maplec.lib> (or maplec.a on *NIX systems?) are
+To build this module properly, you must first have Maple 9 or better 
+installed on your system and append
+the paths of *maplec.h* and *maplec.lib* in your Maple installation to the
+environments LIB and INC respectively. Because this module use Maple's
+C interface (OpenMaple) via XS.
+
+Both maplec.h and maplec.lib (or maplec.a on Linux systems?) are
 provided by your Maple installation itself. A typical path of maplec.h
 is "C:\Program Files\Maple 9\extern\include",
 which should be appended to the INCLUDE environment. And a typical path
@@ -21,10 +36,10 @@ of maplec.lib is "C:\Program Files\Maple 9\bin.win", which should be
 appended to the LIB environment. These paths may be different on your
 machine but do depend on your Maple's version and location.
 
-It may be similar on UNIX, but I haven't tried that.
+It may be similar on Linux, but I haven't tried that.
 
-It's known that this library's XS part won't work with Maple 7 on Win32.
-Sigh.
+It's already known that this library's XS part won't work with Maple 7 on
+Win32. Sigh.
 
 To install this module type the following:
 
