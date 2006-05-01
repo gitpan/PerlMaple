@@ -1,11 +1,11 @@
 #: PerlMaple/Expression.pm
 #: Implementation for the PerlMaple::Expression class
 #: Copyright (c) 2005-2006 Agent Zhang
-#: 2005-12-19 2006-02-18
+#: 2005-12-19 2006-05-02
 
 package PerlMaple::Expression;
 
-use 5.006;
+use 5.006001;
 use strict;
 use warnings;
 
@@ -14,7 +14,7 @@ use vars qw( $AUTOLOAD );
 use PerlMaple;
 #use Smart::Comments;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 our $maple;
 
 use overload
@@ -138,7 +138,7 @@ PerlMaple::Expression - Perl AST for arbitrary Maple expressions
 
 =head1 VERSION
 
-This document describes PerlMaple::Expression 0.05 released on February 18, 2006.
+This document describes PerlMaple::Expression 0.06 released on May 2rd, 2006.
 
 =head1 SYNOPSIS
 

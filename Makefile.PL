@@ -3,8 +3,8 @@ use warnings;
 use inc::Module::Install;
 
 name            ('PerlMaple');
-all_from        ('lib/PerlMaple.pm');
 license         ('perl');
+all_from        ('lib/PerlMaple.pm');
 
 requires        ('Carp');
 

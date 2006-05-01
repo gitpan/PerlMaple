@@ -1,10 +1,10 @@
-#line 1 "inc/Module/Install/MakeMaker.pm - E:/Perl/site/lib/Module/Install/MakeMaker.pm"
+#line 1
 package Module::Install::MakeMaker;
 
 use Module::Install::Base;
 @ISA = qw(Module::Install::Base);
 
-$VERSION = '0.01';
+$VERSION = '0.61';
 
 use ExtUtils::MakeMaker ();
 

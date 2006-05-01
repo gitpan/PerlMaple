@@ -1,11 +1,11 @@
 #: PerlMaple.pm
 #: implementation for the PerlMaple class
 #: Copyright (c) 2005-2006 Agent Zhang
-#: 2005-11-14 2006-02-18
+#: 2005-11-14 2006-05-02
 
 package PerlMaple;
 
-use 5.006;
+use 5.006001;
 use strict;
 use warnings;
 
@@ -13,7 +13,7 @@ use PerlMaple::Expression;
 use Carp qw(carp croak);
 use vars qw( $AUTOLOAD );
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 my $Started = 0;
 
 require XSLoader;
@@ -42,6 +42,10 @@ sub eval_cmd {
         warn "$exp\n";
     }
     maple_eval($exp);
+    my $warning = maple_warning();
+    if ($self->{PrintError} and $warning) {
+        carp "PerlMaple: $warning";
+    }
     if (maple_success()) {
         my $res = maple_result();
         return
@@ -120,7 +124,7 @@ PerlMaple - Perl binding for Maplesoft's Maple mathematical package
 
 =head1 VERSION
 
-This document describes PerlMaple 0.05 released on February 18, 2006.
+This document describes PerlMaple 0.06 released on May 2rd, 2006.
 
 =head1 SYNOPSIS
 
@@ -327,6 +331,8 @@ The PrintError attribute can be used to force errors to generate warnings
 set ``on'' (say, a true value), any method which results in an error
 occurring will cause the PerlMaple to effectively do a
 C<carp("PerlMaple error: ", $self->error, " when evaluating \"$exp\"";)>.
+Any warnings from the Maple kernel will also be sent to stderr via carp
+if PrintError is on.
 
 By default, the constructor C<new> sets PrintError ``on''.
 
@@ -362,6 +368,10 @@ method every time, so this attribute is off by default.
 
 Returns the raw error message issued by the Maple kernel.
 
+=item maple_warning
+
+Returns the raw warning message returned by the Maple kernel.
+
 =item maple_eval
 
 Raw XS C method that evaluates any Maple commands.
@@ -385,14 +395,14 @@ Indicates whether the last Maple evaluation is successful.
 =head1 CODE COVERAGE
 
 I use L<Devel::Cover> to test the code coverage of my tests, below is the
-L<Devel::Cover> report on this module's test suite (version 0.05):
+L<Devel::Cover> report on this module's test suite (version 0.06):
 
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
     File                           stmt   bran   cond    sub    pod   time  total
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
-    blib/lib/PerlMaple.pm          93.7   83.3   66.7  100.0  100.0  100.0   91.9
+    blib/lib/PerlMaple.pm          92.4   80.8   66.7  100.0  100.0  100.0   89.9
     ...b/PerlMaple/Expression.pm   98.7   88.9   66.7  100.0  100.0    0.0   94.6
-    Total                          96.5   86.7   66.7  100.0  100.0  100.0   93.4
+    Total                          95.9   85.5   66.7  100.0  100.0  100.0   92.5
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
 
 =head1 BUGS

@@ -7,6 +7,7 @@
 
 static MKernelVector kv;
 static char errinfo[2048];
+static char warninfo[2048];
 static char result[100000];
 static int error = 0;
 
@@ -14,11 +15,12 @@ static int error = 0;
 static void M_DECL textCallBack( void *data, int tag, char *output ) {
     if (tag == MAPLE_TEXT_STATUS) return;
     if (tag == MAPLE_TEXT_WARNING) {
-        warn("%s", output);
-        return;
+        strncpy(warninfo, output, sizeof(warninfo));
+        warninfo[sizeof(warninfo)-1] = '\0';
+    } else {
+        strncpy(result, output, sizeof(result));
+        result[sizeof(result)-1] = '\0';
     }
-    strncpy(result, output, sizeof(result));
-    result[sizeof(result)-1] = '\0';
 }
 
 void M_DECL errorCallBack( void *data, M_INT offset, char *msg ) {
@@ -40,6 +42,7 @@ int maple_start() {
                 0    /* callBackCallBack not used */
                 };
     errinfo[0] = '\0';
+    warninfo[0] = '\0';
     result[0] = '\0';
     if( (kv=StartMaple(0,NULL,&cb,NULL,NULL,err)) == NULL )
         return 0;
@@ -54,6 +57,10 @@ void maple_eval(char* expr) {
 
 char* maple_error() {
     return errinfo;
+}
+
+char* maple_warning() {
+    return warninfo;
 }
 
 char* maple_result() {
@@ -80,6 +87,7 @@ maple_eval (expr)
     I32* temp;
     PPCODE:
     temp = PL_markstack_ptr++;
+    warninfo[0] = '\0';
     result[0] = '\0';
     maple_eval(expr);
     if (PL_markstack_ptr != temp) {
@@ -92,6 +100,9 @@ maple_eval (expr)
 
 char *
 maple_error ()
+
+char *
+maple_warning ()
 
 char *
 maple_result ()
