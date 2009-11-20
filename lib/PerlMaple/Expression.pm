@@ -14,7 +14,7 @@ use vars qw( $AUTOLOAD );
 use PerlMaple;
 #use Smart::Comments;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 our $maple;
 
 use overload
@@ -138,7 +138,7 @@ PerlMaple::Expression - Perl AST for arbitrary Maple expressions
 
 =head1 VERSION
 
-This document describes PerlMaple::Expression 0.06 released on May 2rd, 2006.
+This document describes PerlMaple::Expression 0.07 released on Nov 20, 2009.
 
 =head1 SYNOPSIS
 
